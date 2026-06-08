@@ -70,48 +70,40 @@ flowchart TD
 ```mermaid
 flowchart TD
     subgraph Client["Клиентская часть"]
-        Browser[Браузер\nПК / ноутбук]
-        MobileApp[Мобильное приложение\niOS / Android\n(в будущем)]
+        Browser["Браузер\nПК / ноутбук"]
     end
 
     subgraph Server["Серверная часть"]
-        LB[Балансировщик нагрузки\nNginx]
+        LB["Балансировщик нагрузки\nNginx"]
         
         subgraph MonolithApp["Монолитное приложение\n(реплики)"]
-            WebServer[Веб-сервер\nGunicorn / Tomcat]
-            CacheClient[Клиент кеша\nRedis Client]
-            Worker[Фоновый воркер\nCelery / Sidekiq]
+            WebServer["Веб-сервер\nGunicorn / Tomcat"]
+            CacheClient["Клиент кеша\nRedis Client"]
+            Worker["Фоновый воркер\nCelery / Sidekiq"]
         end
         
-        Cache[Кеш\nRedis]
+        Cache["Кеш\nRedis"]
     end
 
     subgraph External["Внешние системы"]
-        CDN[CDN\nCloudFront / Cloudflare]
-        EmailSMTP[Почтовый сервис\nSMTP / Яндекс.Почта]
+        CDN["CDN\nCloudFront / Cloudflare"]
+        EmailSMTP["Почтовый сервис\nSMTP / Яндекс.Почта"]
     end
 
     subgraph Storage["Хранение данных"]
-        DB[(Реляционная БД\nPostgreSQL)]
-        SearchDB[(Поисковый индекс\nElasticsearch / Meilisearch)]
-        MediaStorage[Файловое хранилище\nS3 / MinIO]
+        DB[("Реляционная БД\nPostgreSQL")]
+        SearchDB[("Поисковый индекс\nElasticsearch / Meilisearch")]
+        MediaStorage["Файловое хранилище\nS3 / MinIO"]
     end
 
-    %% Связи
     Browser --> LB
-    MobileApp -.->|в будущем| LB
-    
     LB --> WebServer
-    
     WebServer --> Cache
     WebServer --> DB
     WebServer --> SearchDB
     WebServer --> MediaStorage
-    
     WebServer --> Worker
     Worker --> EmailSMTP
     Worker --> DB
-    
     Browser --> CDN
-    MobileApp -.-> CDN
 ```
