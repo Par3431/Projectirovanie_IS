@@ -68,42 +68,43 @@ flowchart TD
 3. **Сбои в одном модуле не должны валить весь магазин** (например, упал платёжный шлюз, но поиск запчастей должен работать)
 
 ```mermaid
-flowchart TD
-    subgraph Client["Клиентская часть"]
-        Browser["Браузер\nПК / ноутбук"]
+flowchart TB
+
+    %% Клиентская часть
+    Browser["🖥️ Браузер\n(ПК / ноутбук)"]
+
+    %% Серверная часть
+    LB["⚖️ Балансировщик\nNginx"]
+
+    subgraph App["Монолитное приложение"]
+        Web["🌐 Веб-сервер\nGunicorn/Tomcat"]
+        CacheClient["📦 Клиент кеша\nRedis Client"]
+        Worker["⏳ Фоновый воркер\nCelery/Sidekiq"]
     end
 
-    subgraph Server["Серверная часть"]
-        LB["Балансировщик нагрузки\nNginx"]
-        
-        subgraph MonolithApp["Монолитное приложение\n(реплики)"]
-            WebServer["Веб-сервер\nGunicorn / Tomcat"]
-            CacheClient["Клиент кеша\nRedis Client"]
-            Worker["Фоновый воркер\nCelery / Sidekiq"]
-        end
-        
-        Cache["Кеш\nRedis"]
-    end
+    Redis["🗄️ Кеш\nRedis"]
 
-    subgraph External["Внешние системы"]
-        CDN["CDN\nCloudFront / Cloudflare"]
-        EmailSMTP["Почтовый сервис\nSMTP / Яндекс.Почта"]
-    end
+    %% Внешние системы
+    CDN["☁️ CDN\nCloudFront/Cloudflare"]
+    Email["📧 Почтовый сервис\nSMTP"]
 
-    subgraph Storage["Хранение данных"]
-        DB[("Реляционная БД\nPostgreSQL")]
-        SearchDB[("Поисковый индекс\nElasticsearch / Meilisearch")]
-        MediaStorage["Файловое хранилище\nS3 / MinIO"]
-    end
+    %% Хранилища
+    DB[("💾 Реляционная БД\nPostgreSQL")]
+    Search[("🔍 Поисковый индекс\nElasticsearch")]
+    Media["📁 Файловое хранилище\nS3/MinIO"]
 
+    %% Связи
     Browser --> LB
-    LB --> WebServer
-    WebServer --> Cache
-    WebServer --> DB
-    WebServer --> SearchDB
-    WebServer --> MediaStorage
-    WebServer --> Worker
-    Worker --> EmailSMTP
+    LB --> Web
+
+    Web --> Redis
+    Web --> DB
+    Web --> Search
+    Web --> Media
+
+    Web --> Worker
+    Worker --> Email
     Worker --> DB
+
     Browser --> CDN
 ```
