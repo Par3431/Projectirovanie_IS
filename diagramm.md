@@ -2,18 +2,19 @@
 
 ```mermaid
 flowchart TD
-    User[Пользователь\n(браузер на ПК или ноутбуке)]
+    User(("Пользователь"))
+    User2(("Браузер на ПК/ноутбуке"))
 
-    subgraph Monolith["Монолитное приложение\n(Один сервер / один процесс)"]
-        WebUI[Веб-интерфейс\n(HTML + CSS + JS)]
-        API[Внутренние модули\n(без отдельного API-шлюза)]
-        DB_Layer[Слой работы с БД]
+    subgraph Monolith["Монолитное приложение"]
+        WebUI["Веб-интерфейс\n(HTML + CSS + JS)"]
+        API["Внутренние модули\n(без API-шлюза)"]
+        DB_Layer["Слой работы с БД"]
     end
 
-    DB[(Реляционная БД\nPostgreSQL / MySQL)]
+    DB[("Реляционная БД\nPostgreSQL/MySQL")]
 
-    User -- HTTP-запросы\n(переход по ссылкам, отправка форм) --> WebUI
-    WebUI -- прямые вызовы функций / модулей --> API
-    API -- SQL-запросы --> DB_Layer
-    DB_Layer -- подключение --> DB
+    User2 -- "HTTP-запросы" --> WebUI
+    WebUI --> API
+    API --> DB_Layer
+    DB_Layer --> DB
 ```
