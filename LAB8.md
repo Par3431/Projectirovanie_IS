@@ -66,3 +66,52 @@ flowchart TD
 1. **Команда разработки > 8 человек** (две и более команд не могут комфортно работать в одном монолите)
 2. **Асимметричная нагрузка** (например, каталог читается 2000 раз/с, а оформление заказа — 50 раз/с, нужно масштабировать их независимо)
 3. **Сбои в одном модуле не должны валить весь магазин** (например, упал платёжный шлюз, но поиск запчастей должен работать)
+
+```mermaid
+flowchart TD
+    subgraph Client["Клиентская часть"]
+        Browser[Браузер\nПК / ноутбук]
+        MobileApp[Мобильное приложение\niOS / Android\n(в будущем)]
+    end
+
+    subgraph Server["Серверная часть"]
+        LB[Балансировщик нагрузки\nNginx]
+        
+        subgraph MonolithApp["Монолитное приложение\n(реплики)"]
+            WebServer[Веб-сервер\nGunicorn / Tomcat]
+            CacheClient[Клиент кеша\nRedis Client]
+            Worker[Фоновый воркер\nCelery / Sidekiq]
+        end
+        
+        Cache[Кеш\nRedis]
+    end
+
+    subgraph External["Внешние системы"]
+        CDN[CDN\nCloudFront / Cloudflare]
+        EmailSMTP[Почтовый сервис\nSMTP / Яндекс.Почта]
+    end
+
+    subgraph Storage["Хранение данных"]
+        DB[(Реляционная БД\nPostgreSQL)]
+        SearchDB[(Поисковый индекс\nElasticsearch / Meilisearch)]
+        MediaStorage[Файловое хранилище\nS3 / MinIO]
+    end
+
+    %% Связи
+    Browser --> LB
+    MobileApp -.->|в будущем| LB
+    
+    LB --> WebServer
+    
+    WebServer --> Cache
+    WebServer --> DB
+    WebServer --> SearchDB
+    WebServer --> MediaStorage
+    
+    WebServer --> Worker
+    Worker --> EmailSMTP
+    Worker --> DB
+    
+    Browser --> CDN
+    MobileApp -.-> CDN
+```
