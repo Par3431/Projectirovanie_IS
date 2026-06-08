@@ -5,11 +5,11 @@ flowchart TD
     User(("Пользователь"))
     User2(("Браузер на ПК/ноутбуке"))
 
-    subgraph Monolith["Монолитное приложение"]
-        WebUI["Веб-интерфейс\n(HTML + CSS + JS)"]
-        API["Внутренние модули\n(без API-шлюза)"]
-        DB_Layer["Слой работы с БД"]
-    end
+    Monolith["Монолитное приложение"]
+    WebUI["Веб-интерфейс\n(HTML + CSS + JS)"]
+    API["Внутренние модули\n(без API-шлюза)"]
+    DB_Layer["Слой работы с БД"]
+    
 
     DB[("Реляционная БД\nPostgreSQL/MySQL")]
 
