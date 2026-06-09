@@ -72,7 +72,7 @@ flowchart TB
 
     subgraph App["Монолитное приложение"]
         Web["🌐 Веб-сервер\nGunicorn/Tomcat"]
-        CacheClient["📦 Клиент кеша\nRedis Client"]
+        CacheClient["📦 Клиент кэша\nRedis Client"]
         Worker["⏳ Фоновый воркер\nCelery/Sidekiq"]
     end
 
